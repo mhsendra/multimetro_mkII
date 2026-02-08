@@ -1,0 +1,127 @@
+#include <Arduino.h>
+#include "mode_mosfet.h"
+#include "adcmanager.h"
+#include "lcd_ui.h"
+#include "auto_hold.h"
+#include "backlight.h"
+#include "autoOff.h"
+#include "pins.h"
+#include "range_control.h"
+#include "config.h"
+
+/* =====================================================
+ * MEDIR MOSFET (Vth)
+ * ===================================================== */
+float measureMosfet()
+{
+    rng_release_for_gpio(); // liberar RNG para este modo
+
+    // Drenador a GND
+    pinMode(pin.TP3, OUTPUT);
+    digitalWrite(pin.TP3, LOW);
+
+    // Drenador/medición
+    pinMode(pin.TP2, INPUT);
+
+    float vth = NAN;
+
+    // Barrido de puerta 0 → 5 V
+    for (int step = 0; step <= 50; step++)
+    {
+        float vg = (step / 50.0f) * 5.0f;
+
+        // Aplicar tensión de puerta
+        pinMode(pin.TP1, OUTPUT);
+        analogWrite(pin.TP1, (int)(vg / 5.0f * 255));
+        delay(2);
+
+        // Medir tensión en drenador
+        adc_manager_select(RANGE_DC_20V);
+        adc_manager_set_sps(ADC_SPS_475);
+
+        uint16_t raw = adc_manager_read_blocking();
+        float vd = adc_manager_raw_to_voltage(raw);
+
+        // Cuando el MOSFET empieza a conducir, VD cae
+        if (vd < 4.0f)
+        {
+            vth = vg;
+            break;
+        }
+    }
+
+    // Reset pines
+    pinMode(pin.TP1, INPUT);
+    pinMode(pin.TP2, INPUT);
+    pinMode(pin.TP3, INPUT);
+
+    return vth;
+}
+
+/* =====================================================
+ * PANTALLA
+ * ===================================================== */
+void showMosfet()
+{
+    // Reset de sistemas auxiliares
+    backlight_activity();
+    autoHold_reset();
+    autoOff_reset();
+
+    lcd_ui_clear();
+    lcd_ui_print("Detectando...");
+    delay(200);
+
+    float vth = measureMosfet();
+
+    // Registrar actividad
+    if (!isnan(vth))
+    {
+        backlight_activity();
+        autoOff_activity();
+    }
+
+    // --- AUTO HOLD ---
+    if (autoHold_update(vth))
+    {
+        float held = autoHold_getHeldValue();
+
+        lcd_ui_clear();
+        lcd_ui_print("MOSFET (HOLD)");
+        lcd_ui_setCursor(0, 1);
+
+        if (isnan(held))
+        {
+            lcd_ui_print("OL");
+            return;
+        }
+
+        lcd_ui_print("Vth:");
+        lcd_ui_printFloat(held, 2);
+        lcd_ui_print("V");
+        return;
+    }
+
+    // --- Lectura normal ---
+    lcd_ui_clear();
+    lcd_ui_print("MOSFET");
+    lcd_ui_setCursor(0, 1);
+
+    if (isnan(vth))
+    {
+        lcd_ui_print("OL");
+        return;
+    }
+
+    lcd_ui_print("Vth:");
+    lcd_ui_printFloat(vth, 2);
+    lcd_ui_print("V");
+}
+
+/* =====================================================
+ * API PÚBLICA DEL MODO MOSFET
+ * ===================================================== */
+void measureMosfetMode()
+{
+    showMosfet();
+}

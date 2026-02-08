@@ -1,0 +1,247 @@
+#include "mode_vdc.h"
+#include "adcmanager.h"
+#include "globals.h"
+#include "lcd_ui.h"
+#include "config.h"
+#include "auto_Hold.h"
+#include "mode_current.h"
+#include "backlight.h"
+#include "AutoOff.h"
+#include "range_control.h"
+#include <math.h>
+
+// =====================================================
+// AUTO-RANGO VISUAL (mV / V) con histéresis
+// =====================================================
+bool use_millivolts(float v)
+{
+    static bool in_mV = false;
+
+    if (v < 0.95f)
+        in_mV = true;
+    if (v > 1.05f)
+        in_mV = false;
+
+    return in_mV;
+}
+
+// =====================================================
+// VDC — usando ADS1115
+// =====================================================
+float measureVDC_raw(void)
+{
+    // Leer voltaje directamente del ADS1115
+    float v_adc = adc_manager_read_voltage();
+
+    // Saturación / overflow del ADC externo
+    if (fabs(v_adc) > 4.09f) // cerca del full-scale del ADS1115
+        return INFINITY;
+
+    // Escalado según el rango actual del ADC
+    adc_range_id_t r = adc_manager_current_range();
+    float scale = 1.0f;
+
+    switch (r)
+    {
+    case RANGE_DC_200mV:
+        scale = 0.0011f;
+        break;
+    case RANGE_DC_2V:
+        scale = 0.011f;
+        break;
+    case RANGE_DC_20V:
+        scale = 0.110f;
+        break;
+    case RANGE_DC_200V:
+        scale = 1.10f;
+        break;
+    default:
+        return NAN;
+    }
+
+    return v_adc * scale;
+}
+
+float measureVDC_calibrated(void)
+{
+    float v = measureVDC_raw();
+    if (isinf(v))
+        return v;
+
+    return v * cal.vdc;
+}
+
+// =====================================================
+// VDC RELATIVO
+// =====================================================
+static float vdc_reference = NAN;
+
+float measureVDC_Relative(void)
+{
+    float v = measureVDC_calibrated();
+
+    if (isnan(vdc_reference))
+        vdc_reference = v;
+
+    return v - vdc_reference;
+}
+
+// =====================================================
+// POWER (W)
+// =====================================================
+float measurePower(void)
+{
+    float v = measureVDC_calibrated();
+    float i = measureCURRENT_calibrated();
+
+    if (isinf(v) || isinf(i))
+        return INFINITY;
+
+    return v * i;
+}
+
+// =====================================================
+// ENERGY (Wh)
+// =====================================================
+static unsigned long lastEnergyUpdate = 0;
+static float energy_Wh = 0;
+
+float measureEnergy(void)
+{
+    unsigned long now = millis();
+
+    if (lastEnergyUpdate == 0)
+    {
+        lastEnergyUpdate = now;
+        return energy_Wh;
+    }
+
+    float dt_h = (now - lastEnergyUpdate) / 3600000.0f; // tiempo en horas
+    float p = measurePower();
+
+    if (!isinf(p))
+        energy_Wh += p * dt_h;
+
+    lastEnergyUpdate = now;
+    return energy_Wh;
+}
+
+// =====================================================
+// PANTALLAS
+// =====================================================
+void showVDC(void)
+{
+    float v = measureVDC_calibrated();
+
+    if (autoHold_update(v))
+        v = autoHold_getHeldValue();
+
+    lcd_ui_clear();
+
+    if (isinf(v))
+    {
+        lcd_ui_print("VDC: OVL");
+        return;
+    }
+
+    lcd_ui_print("VDC: ");
+    if (use_millivolts(v))
+    {
+        lcd_ui_printFloat(v * 1000.0f, 1);
+        lcd_ui_print(" mV");
+    }
+    else
+    {
+        lcd_ui_printFloat(v, 3);
+        lcd_ui_print(" V");
+    }
+}
+
+void showVDC_Relative(void)
+{
+    float v = measureVDC_Relative();
+    lcd_ui_clear();
+
+    if (isinf(v))
+    {
+        lcd_ui_print("REL: OVL");
+        return;
+    }
+
+    lcd_ui_print("REL: ");
+    if (use_millivolts(fabs(v)))
+    {
+        lcd_ui_printFloat(v * 1000.0f, 1);
+        lcd_ui_print(" mV");
+    }
+    else
+    {
+        lcd_ui_printFloat(v, 3);
+        lcd_ui_print(" V");
+    }
+}
+
+void showPower(void)
+{
+    float p = measurePower();
+    lcd_ui_clear();
+
+    if (isinf(p))
+    {
+        lcd_ui_print("P: OVL");
+        return;
+    }
+
+    lcd_ui_print("P: ");
+    lcd_ui_printFloat(p, 2);
+    lcd_ui_print(" W");
+}
+
+void showEnergy(void)
+{
+    float e = measureEnergy();
+    lcd_ui_clear();
+
+    lcd_ui_print("E: ");
+    lcd_ui_printFloat(e, 3);
+    lcd_ui_print(" Wh");
+}
+
+// =====================================================
+// MODO COMPLETO VDC
+// =====================================================
+void measureVDC_MODE(void)
+{
+    // Liberar pines RNGx si se venían usando en modo OHM
+    rng_release_for_gpio();
+
+    backlight_activity();
+    autoOff_activity();
+
+    // Seleccionar rango ADC adecuado (20V por defecto, auto-rango puede implementarse si quieres)
+    adc_manager_select(RANGE_DC_20V);
+
+    switch (vdcSubMode)
+    {
+    case VDC_MAIN:
+        showVDC();
+        break;
+    case VDC_REL:
+        showVDC_Relative();
+        break;
+    case VDC_POWER:
+        showPower();
+        break;
+    case VDC_ENERGY:
+        showEnergy();
+        break;
+    case VDC_CURRENT_EST:
+    {
+        lcd_ui_clear();
+        lcd_ui_print("I est: ");
+        lcd_ui_printFloat(measureCURRENT_calibrated() * 1000.0f, 1);
+        lcd_ui_print(" mA");
+    }
+    break;
+    }
+}

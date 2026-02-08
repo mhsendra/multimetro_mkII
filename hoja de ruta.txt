@@ -1,0 +1,253 @@
+🧭 Hoja de ruta – Multímetro DIY más robusto (v4 conceptual)
+FASE 0 — Congelar el estado actual (muy importante)
+
+Antes de mejorar nada:
+
+📌 Congelar:
+
+esquemático actual
+
+firmware que funciona
+
+🧪 Medir y anotar:
+
+errores típicos por rango
+
+ruido
+
+tiempos de respuesta
+
+📝 Documentar:
+
+qué ADC mide qué
+
+qué SEL controla qué rango
+
+👉 Esto es tu baseline. Sin esto, cualquier mejora es a ciegas.
+
+FASE 1 — Robustecer el HARDWARE (sin cambiar MCU)
+1.1 Protección de entradas (prioridad absoluta)
+🔌 Entrada de voltaje (DC/AC)
+
+Objetivo: que un error humano no mate el ADC.
+
+Implementar (todo THT, clásico, probado):
+
+🔥 PTC resettable en serie con la entrada
+
+⚡ MOV o TVS (dependiendo del rango máximo esperado)
+
+🧲 Diodos rápidos a VCC/GND (1N4148 o BAV21)
+
+🪜 Resistencia serie fija antes del divisor
+
+Resultado:
+
+El ADC nunca ve más allá de ±0.3 V fuera de rails
+
+El firmware ya no depende de “no equivocarse”
+
+1.2 Protección en modo Ohm / Continuidad / Diodo
+
+Aquí es donde mueren muchos DIY.
+
+Añadir:
+
+Resistencia serie fija SIEMPRE presente
+
+Diodos de clamp al ADC
+
+Limitar corriente máxima incluso si:
+
+entra tensión externa
+
+el selector está mal posicionado
+
+👉 Asumir que el usuario se equivoca es parte del diseño robusto.
+
+1.3 Corriente: sacrificar precisión por supervivencia
+
+Shunt THT de potencia sobredimensionado
+
+Fusible real (vidrio, lento)
+
+Protección térmica pasiva (PTC)
+
+El firmware no puede salvar un shunt quemado.
+
+FASE 2 — Simplificar y centralizar el FIRMWARE
+
+Aquí hay mucho margen sin perder funcionalidad.
+
+2.1 Capa única de ADC (clave)
+
+Ahora:
+
+Cada modo toca ADC, referencias y rangos
+
+Propuesta:
+Crear un solo módulo central tipo:
+
+adc_manager.cpp
+
+
+Responsabilidades:
+
+Seleccionar canal
+
+Seleccionar referencia
+
+Aplicar settling time
+
+Descartar N lecturas
+
+Devolver valor filtrado
+
+Los modos solo dicen:
+
+“quiero leer ADC_DC en rango X”
+
+Esto:
+
+reduce bugs
+
+garantiza coherencia
+
+hace trivial cambiar tiempos o filtros
+
+2.2 Descarte sistemático de lecturas (obligatorio)
+
+Regla de oro:
+
+cada cambio de:
+
+MUX
+
+referencia
+
+rango
+
+descarta 2–3 lecturas
+
+Implementación:
+
+No en cada modo
+
+en el ADC manager
+
+Resultado:
+
+Menos ruido
+
+Lecturas repetibles
+
+Menos “fantasmas”
+
+2.3 Centralizar rangos y escalados
+
+Ahora:
+
+Cada modo sabe cómo escalar
+
+Mejor:
+Una tabla de rangos global:
+
+struct RangeConfig {
+  adc_channel
+  sel_state
+  scale_factor
+  max_value
+}
+
+
+Beneficios:
+
+Cambias hardware → cambias una tabla
+
+Menos lógica duplicada
+
+Firmware más legible
+
+2.4 Máquina de estados mínima por modo
+
+No hace falta algo complejo, pero sí explícito:
+
+Estados típicos:
+
+INIT
+
+SET_RANGE
+
+MEASURE
+
+DISPLAY
+
+ERROR
+
+Esto:
+
+evita condiciones raras
+
+facilita depuración
+
+ayuda al auto-off
+
+FASE 3 — Auto-off, watchdog y robustez lógica
+3.1 Auto-off inteligente
+
+Resetear temporizador en cada medición válida
+
+No solo por botones
+
+Evita apagados absurdos en mediciones lentas.
+
+3.2 Watchdog activado (sí o sí)
+
+Reset seguro si algo se cuelga
+
+Especialmente útil con:
+
+ADC
+
+I2C
+
+estados raros
+
+Un multímetro colgado = instrumento muerto.
+
+FASE 4 — Calibración y precisión práctica
+4.1 Calibración por software (sin hardware extra)
+
+Guardar factores en EEPROM
+
+Calibrar:
+
+offset
+
+ganancia
+
+Por rango, no global
+
+4.2 Filtrado simple pero estable
+
+Media móvil pequeña
+
+Rechazo de outliers
+
+Nada sofisticado (el 328P no da para DSP)
+
+FASE 5 — Validación antes de fabricar
+
+Checklist que recomiendo sí o sí:
+
+❏ Conectar 12 V donde no toca → ¿sobrevive?
+
+❏ Cambiar de modo con tensión presente → ¿ADC vive?
+
+❏ Selector en posición incorrecta → ¿algo se quema?
+
+❏ Medición lenta → ¿auto-off molesta?
+
+❏ Ruido → ¿se estabiliza?
+
+Si pasa esto, pasa casi todo.
