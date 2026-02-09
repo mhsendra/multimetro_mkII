@@ -52,8 +52,8 @@ void mode_zener_run()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando Zener...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando Zener...");
     delay(200);
 
     float vz = measureZener();
@@ -69,34 +69,34 @@ void mode_zener_run()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print("ZENER (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "ZENER (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (isnan(held))
         {
-            lcd_ui_print("OL");
+            lcd_driver_print(&lcd, "OL");
             return;
         }
 
-        lcd_ui_print("Vz:");
-        lcd_ui_printFloat(held, 2);
-        lcd_ui_print(" V");
+        lcd_driver_print(&lcd, "Vz:");
+        lcd_driver_printFloat(&lcd, held, 2);
+        lcd_driver_print(&lcd, " V");
         return;
     }
 
     // --- Lectura normal ---
-    lcd_ui_clear();
-    lcd_ui_print("ZENER");
-    lcd_ui_setCursor(0, 1);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "ZENER");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
     if (isnan(vz))
     {
-        lcd_ui_print("OL");
+        lcd_driver_print(&lcd, "OL");
         return;
     }
 
-    lcd_ui_print("Vz:");
-    lcd_ui_printFloat(vz, 2);
-    lcd_ui_print(" V");
+    lcd_driver_print(&lcd, "Vz:");
+    lcd_driver_printFloat(&lcd, vz, 2);
+    lcd_driver_print(&lcd, " V");
 }

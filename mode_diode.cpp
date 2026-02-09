@@ -61,8 +61,8 @@ void showDiode()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     float Vf = measureDiode();
@@ -78,33 +78,33 @@ void showDiode()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print("DIODE (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "DIODE (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (isnan(held))
         {
-            lcd_ui_print("OL");
+            lcd_driver_print(&lcd, "OL");
             return;
         }
 
         if (held < 0.05f)
         {
-            lcd_ui_print("SHORT");
+            lcd_driver_print(&lcd, "SHORT");
             return;
         }
 
-        lcd_ui_printFloat(held, 3);
-        lcd_ui_print(" V");
+        lcd_driver_printFloat(&lcd, held, 3);
+        lcd_driver_print(&lcd, " V");
         return;
     }
 
     // --- LECTURA NORMAL ---
-    lcd_ui_clear();
-    lcd_ui_print("DIODE: ");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "DIODE: ");
 
     if (Vf < 0.05f)
-        lcd_ui_print("SHORT");
+        lcd_driver_print(&lcd, "SHORT");
     else
-        lcd_ui_printFloat(Vf, 3), lcd_ui_print(" V");
+        lcd_driver_printFloat(&lcd, Vf, 3), lcd_driver_print(&lcd, " V");
 }

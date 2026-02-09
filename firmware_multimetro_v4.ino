@@ -3,6 +3,7 @@
 #include "filters.h"
 #include "globals.h"
 #include "lcd_ui.h"
+#include "lcd_driver.h"
 #include "menus.h"
 #include "calibration.h"
 #include "adcmanager.h"
@@ -16,7 +17,6 @@
 #include "mode_zener.h"
 #include "induct.h"
 #include "AutoOff.h"
-#include "lcd_setup.h"
 #include "backlight.h"
 #include "mode_dispatchers.h"
 
@@ -26,9 +26,10 @@ void setup()
     digitalWrite(pin.PIN_ONOFF, HIGH); // mantener encendido
 
     backlight_reset();
+
     // Inicialización de hardware
     Wire.begin();
-    lcd_setup();
+    lcd_ui_setup(&lcd);
 
     // Inicialización de pines
     pinMode(pin.PIN_CAL, INPUT_PULLUP);
@@ -42,9 +43,10 @@ void setup()
     loadCalibration();
     initFilters();
     adc_manager_init();
-    lcd.clear();
-    lcd.print("Multímetro");
-    delay(1000);
+
+    // Mensaje de bienvenida en pantalla
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Multímetro");
 }
 
 void loop()

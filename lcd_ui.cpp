@@ -1,40 +1,32 @@
 #include "lcd_ui.h"
 #include "globals.h"
 
-// =====================================================
-// FUNCIONES BÁSICAS DE UI
-// =====================================================
-
-void lcd_ui_clear()
+// Inicializa el LCD
+void lcd_ui_setup(LCD_Handle *handle)
 {
-    lcd.clear();
+    lcd_driver_init(handle, LCD_ADDR, LCD_COLS, LCD_ROWS);
 }
 
-void lcd_ui_print(const char *text)
+// Limpia la pantalla
+void lcd_ui_clear(LCD_Handle *handle)
 {
-    lcd.print(text);
+    lcd_driver_clear(handle);
 }
 
-void lcd_ui_printFloat(float value, uint8_t decimals)
+// Mueve el cursor del LCD
+void lcd_ui_setCursor(LCD_Handle *handle, uint8_t col, uint8_t row)
 {
-    lcd.print(value, decimals);
+    lcd_driver_setCursor(handle, col, row);
 }
 
-void lcd_ui_setCursor(uint8_t col, uint8_t row)
+// Enciende la luz de fondo
+void lcd_ui_backlightOn(LCD_Handle *handle)
 {
-    lcd.setCursor(col, row);
+    lcd_driver_backlightOn(handle);
 }
 
-// =====================================================
-// BACKLIGHT
-// =====================================================
-
-void lcd_ui_backlightOn()
+// Apaga la luz de fondo
+void lcd_ui_backlightOff(LCD_Handle *handle)
 {
-    lcd.backlight();
-}
-
-void lcd_ui_backlightOff()
-{
-    lcd.noBacklight();
+    lcd_driver_backlightOff(handle);
 }

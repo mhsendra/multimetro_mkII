@@ -197,10 +197,10 @@ void showFrequency()
     if (autoHold_update(f))
         f = autoHold_getHeldValue();
 
-    lcd_ui_clear();
-    lcd_ui_print("FREQ:");
-    lcd_ui_printFloat(f, 1);
-    lcd_ui_print(" Hz");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "FREQ:");
+    lcd_driver_printFloat(&lcd, f, 1);
+    lcd_driver_print(&lcd, " Hz");
 }
 
 void showDutyCycle()
@@ -213,10 +213,10 @@ void showDutyCycle()
         autoOff_activity();
     }
 
-    lcd_ui_clear();
-    lcd_ui_print("DUTY:");
-    lcd_ui_printFloat(d, 1);
-    lcd_ui_print(" %");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "DUTY:");
+    lcd_driver_printFloat(&lcd, d, 1);
+    lcd_driver_print(&lcd, " %");
 }
 
 void showPulseWidth()
@@ -229,10 +229,10 @@ void showPulseWidth()
         autoOff_activity();
     }
 
-    lcd_ui_clear();
-    lcd_ui_print("PW:");
-    lcd_ui_printFloat(pw, 1);
-    lcd_ui_print(" us");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "PW:");
+    lcd_driver_printFloat(&lcd, pw, 1);
+    lcd_driver_print(&lcd, " us");
 }
 
 void showPeriod()
@@ -245,10 +245,10 @@ void showPeriod()
         autoOff_activity();
     }
 
-    lcd_ui_clear();
-    lcd_ui_print("PER:");
-    lcd_ui_printFloat(p, 1);
-    lcd_ui_print(" us");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "PER:");
+    lcd_driver_printFloat(&lcd, p, 1);
+    lcd_driver_print(&lcd, " us");
 }
 
 // =====================================================

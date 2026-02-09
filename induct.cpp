@@ -81,8 +81,8 @@ void showInductance()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     float L = measureInductance_calibrated();
@@ -99,67 +99,67 @@ void showInductance()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print("L (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "L (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (isnan(held) || held <= 0)
         {
-            lcd_ui_print("OUT OF RANGE");
+            lcd_driver_print(&lcd, "OUT OF RANGE");
             return;
         }
 
         if (held < 1e-9)
         {
-            lcd_ui_print("OUT OF RANGE");
+            lcd_driver_print(&lcd, "OUT OF RANGE");
         }
         else if (held < 1e-6)
         {
-            lcd_ui_printFloat(held * 1e9, 1);
-            lcd_ui_print(" nH");
+            lcd_driver_printFloat(&lcd, held * 1e9, 1);
+            lcd_driver_print(&lcd, " nH");
         }
         else if (held < 1e-3)
         {
-            lcd_ui_printFloat(held * 1e6, 1);
-            lcd_ui_print(" uH");
+            lcd_driver_printFloat(&lcd, held * 1e6, 1);
+            lcd_driver_print(&lcd, " uH");
         }
         else
         {
-            lcd_ui_printFloat(held * 1e3, 1);
-            lcd_ui_print(" mH");
+            lcd_driver_printFloat(&lcd, held * 1e3, 1);
+            lcd_driver_print(&lcd, " mH");
         }
         return;
     }
 
     // --- Lectura normal ---
-    lcd_ui_clear();
-    lcd_ui_print("L:");
-    lcd_ui_setCursor(0, 1);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "L:");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
     if (isnan(L) || L <= 0)
     {
-        lcd_ui_print("OUT OF RANGE");
+        lcd_driver_print(&lcd, "OUT OF RANGE");
         return;
     }
 
     if (L < 1e-9)
     {
-        lcd_ui_print("OUT OF RANGE");
+        lcd_driver_print(&lcd, "OUT OF RANGE");
     }
     else if (L < 1e-6)
     {
-        lcd_ui_printFloat(L * 1e9, 1);
-        lcd_ui_print(" nH");
+        lcd_driver_printFloat(&lcd, L * 1e9, 1);
+        lcd_driver_print(&lcd, " nH");
     }
     else if (L < 1e-3)
     {
-        lcd_ui_printFloat(L * 1e6, 1);
-        lcd_ui_print(" uH");
+        lcd_driver_printFloat(&lcd, L * 1e6, 1);
+        lcd_driver_print(&lcd, " uH");
     }
     else
     {
-        lcd_ui_printFloat(L * 1e3, 1);
-        lcd_ui_print(" mH");
+        lcd_driver_printFloat(&lcd, L * 1e3, 1);
+        lcd_driver_print(&lcd, " mH");
     }
 }
 

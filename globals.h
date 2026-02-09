@@ -6,9 +6,13 @@
 #include <Adafruit_ADS1X15.h>
 #include <LiquidCrystal_I2C.h>
 #include "filters.h"
+#include "lcd_driver.h"
 #include <PCF8574.h>
 
 #define PCF8574_ADDR 0x20 // o 0x38 segun modelo
+#define LCD_ADDR 0x27
+#define LCD_COLS 16
+#define LCD_ROWS 2
 
 // === Pines ===
 extern Pins pin; // Struct de pines
@@ -17,8 +21,11 @@ extern Pins pin; // Struct de pines
 extern PCF8574 pcf;
 extern uint8_t pcf_state;
 
-// === LCD ===
-extern LiquidCrystal_I2C lcd;
+extern float ohmMax;
+extern float ohmMin;
+
+// Handle global del LCD
+extern LCD_Handle lcd;
 
 // === Filtros ===
 extern Butterworth2 bw_vdc;

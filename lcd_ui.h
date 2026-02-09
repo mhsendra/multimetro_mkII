@@ -1,14 +1,13 @@
 #ifndef LCD_UI_H
 #define LCD_UI_H
 
-#include <Arduino.h>
+#include "lcd_driver.h"
 
-void lcd_ui_clear();
-void lcd_ui_print(const char* text);
-void lcd_ui_printFloat(float value, uint8_t decimals);
-void lcd_ui_setCursor(uint8_t col, uint8_t row);
-
-void lcd_ui_backlightOn();
-void lcd_ui_backlightOff();
+// Funciones UI de alto nivel
+void lcd_ui_setup(LCD_Handle *handle);
+void lcd_ui_clear(LCD_Handle *handle);
+void lcd_ui_setCursor(LCD_Handle *handle, uint8_t col, uint8_t row);
+void lcd_ui_backlightOn(LCD_Handle *handle);
+void lcd_ui_backlightOff(LCD_Handle *handle);
 
 #endif

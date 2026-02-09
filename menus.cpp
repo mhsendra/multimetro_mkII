@@ -1,75 +1,129 @@
 #include "menus.h"
+#include "lcd_ui.h"
 
 // =====================================================
 // MENÚS
 // =====================================================
-void freqMenu() {
-    lcd.clear();
-    lcd.print("FREQ MENU");
-    lcd.setCursor(0,1);
+void freqMenu()
+{
+    lcd_driver_clear(&lcd);
+    lcd_driver_print(&lcd, "FREQ MENU");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
-    switch (freqSubMode) {
-        case FREQ_MAIN:        lcd.print("1) Frequency"); break;
-        case FREQ_DUTY:        lcd.print("2) Duty"); break;
-        case FREQ_PULSE_WIDTH: lcd.print("3) PulseWidth"); break;
-        case FREQ_PERIOD:      lcd.print("4) Period"); break;
+    switch (freqSubMode)
+    {
+    case FREQ_MAIN:
+        lcd_driver_print(&lcd, "1) Frequency");
+        break;
+    case FREQ_DUTY:
+        lcd_driver_print(&lcd, "2) Duty");
+        break;
+    case FREQ_PULSE_WIDTH:
+        lcd_driver_print(&lcd, "3) PulseWidth");
+        break;
+    case FREQ_PERIOD:
+        lcd_driver_print(&lcd, "4) Period");
+        break;
     }
 }
 
-void vdcMenu() {
-    lcd.clear();
-    lcd.print("VDC MENU");
-    lcd.setCursor(0,1);
+void vdcMenu()
+{
+    lcd_driver_clear(&lcd);
+    lcd_driver_print(&lcd, "VDC MENU");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
-    switch (vdcSubMode) {
-        case VDC_MAIN:        lcd.print("1) Voltage"); break;
-        case VDC_POWER:       lcd.print("2) Power"); break;
-        case VDC_ENERGY:      lcd.print("3) Energy"); break;
-        case VDC_CURRENT_EST: lcd.print("4) Est Curr"); break;
-        case VDC_REL:         lcd.print("5) Rel"); break;
+    switch (vdcSubMode)
+    {
+    case VDC_MAIN:
+        lcd_driver_print(&lcd, "1) Voltage");
+        break;
+    case VDC_POWER:
+        lcd_driver_print(&lcd, "2) Power");
+        break;
+    case VDC_ENERGY:
+        lcd_driver_print(&lcd, "3) Energy");
+        break;
+    case VDC_CURRENT_EST:
+        lcd_driver_print(&lcd, "4) Est Curr");
+        break;
+    case VDC_REL:
+        lcd_driver_print(&lcd, "5) Rel");
+        break;
     }
 }
 
-void vacMenu() {
-    lcd.clear();
-    lcd.print("VAC MENU");
-    lcd.setCursor(0,1);
+void vacMenu()
+{
+    lcd_driver_clear(&lcd);
+    lcd_driver_print(&lcd, "VAC MENU");
+    lcd_driver_setCursor(&lcd, 0, 1);
 
-    switch (vacSubMode) {
-        case VAC_MAIN: lcd.print("1) RMS"); break; 
-        case VAC_REL: lcd.print("2) Rel"); break;
+    switch (vacSubMode)
+    {
+    case VAC_MAIN:
+        lcd_driver_print(&lcd, "1) RMS");
+        break;
+    case VAC_REL:
+        lcd_driver_print(&lcd, "2) Rel");
+        break;
     }
 }
 
-void ohmMenu() {
-    lcd.clear();
-    lcd.print("OHM MENU");
-    lcd.setCursor(0,1);
+void ohmMenu()
+{
+    lcd_driver_clear(&lcd);
+    lcd_driver_print(&lcd, "OHM MENU");
+    lcd_driver_setCursor(&lcd, 0, 1);
 
-    switch (ohmSubMode) {
-        case OHM_MAIN:   lcd.print("1) R"); break;
-        case OHM_CONT:   lcd.print("2) Cont"); break;
-        case OHM_REL:    lcd.print("3) Rel"); break;
-        case OHM_MINMAX: lcd.print("4) Min/Max"); break;
-        case OHM_CABLE:  lcd.print("5) Cable"); break;
+    switch (ohmSubMode)
+    {
+    case OHM_MAIN:
+        lcd_driver_print(&lcd, "1) R");
+        break;
+    case OHM_CONT:
+        lcd_driver_print(&lcd, "2) Cont");
+        break;
+    case OHM_REL:
+        lcd_driver_print(&lcd, "3) Rel");
+        break;
+    case OHM_MINMAX:
+        lcd_driver_print(&lcd, "4) Min/Max");
+        break;
+    case OHM_CABLE:
+        lcd_driver_print(&lcd, "5) Cable");
+        break;
     }
 }
 
-void diodeMenu() {
-    lcd.clear();
-    lcd.print("DIODE MENU");
-    lcd.setCursor(0,1);
+void diodeMenu()
+{
+    lcd_driver_clear(&lcd);
+    lcd_driver_print(&lcd, "DIODE MENU");
+    lcd_driver_setCursor(&lcd, 0, 1);
 
-    switch (diodeSubMode) {
-        case DIODE_MAIN:       lcd.print("1) Diodo"); break;
-        case DIODE_TRANSISTOR: lcd.print("2) Trans"); break;
-        case DIODE_MOSFET:     lcd.print("3) MOSFET"); break;
-        case DIODE_ZENER:      lcd.print("4) Zener"); break;
-        case DIODE_AUTO:       lcd.print("5) Auto"); break;
+    switch (diodeSubMode)
+    {
+    case DIODE_MAIN:
+        lcd_driver_print(&lcd, "1) Diodo");
+        break;
+    case DIODE_TRANSISTOR:
+        lcd_driver_print(&lcd, "2) Trans");
+        break;
+    case DIODE_MOSFET:
+        lcd_driver_print(&lcd, "3) MOSFET");
+        break;
+    case DIODE_ZENER:
+        lcd_driver_print(&lcd, "4) Zener");
+        break;
+    case DIODE_AUTO:
+        lcd_driver_print(&lcd, "5) Auto");
+        break;
     }
 }
 
-int readSelector() {
+int readSelector()
+{
     int b0 = digitalRead(pin.SEL0);
     int b1 = digitalRead(pin.SEL1);
     int b2 = digitalRead(pin.SEL2);
@@ -81,11 +135,13 @@ int readSelector() {
 // =====================================================
 // ACTUALIZACIÓN DE SUBMODOS
 // =====================================================
-void updateFreqSubMode() {
+void updateFreqSubMode()
+{
     static bool lastState = HIGH;
     bool state = digitalRead(pin.PIN_CAL);
 
-    if (lastState == HIGH && state == LOW) {
+    if (lastState == HIGH && state == LOW)
+    {
         freqSubMode = (FreqSubMode)((freqSubMode + 1) % 4);
         freqMenu();
         delay(250);
@@ -93,11 +149,13 @@ void updateFreqSubMode() {
     lastState = state;
 }
 
-void updateVdcSubMode() {
+void updateVdcSubMode()
+{
     static bool lastState = HIGH;
     bool state = digitalRead(pin.PIN_CAL);
 
-    if (lastState == HIGH && state == LOW) {
+    if (lastState == HIGH && state == LOW)
+    {
         vdcSubMode = (VdcSubMode)((vdcSubMode + 1) % 5);
         vdcMenu();
         delay(250);
@@ -105,11 +163,13 @@ void updateVdcSubMode() {
     lastState = state;
 }
 
-void updateVacSubMode() {
+void updateVacSubMode()
+{
     static bool lastState = HIGH;
     bool state = digitalRead(pin.PIN_CAL);
 
-    if (lastState == HIGH && state == LOW) {
+    if (lastState == HIGH && state == LOW)
+    {
         vacSubMode = (VacSubMode)((vacSubMode + 1) % 2);
         vacMenu();
         delay(250);
@@ -117,11 +177,13 @@ void updateVacSubMode() {
     lastState = state;
 }
 
-void updateOhmSubMode() {
+void updateOhmSubMode()
+{
     static bool lastState = HIGH;
     bool state = digitalRead(pin.PIN_CAL);
 
-    if (lastState == HIGH && state == LOW) {
+    if (lastState == HIGH && state == LOW)
+    {
         ohmSubMode = (OhmSubMode)((ohmSubMode + 1) % 5);
         ohmMenu();
         delay(250);
@@ -129,11 +191,13 @@ void updateOhmSubMode() {
     lastState = state;
 }
 
-void updateDiodeSubMode() {
+void updateDiodeSubMode()
+{
     static bool lastState = HIGH;
     bool state = digitalRead(pin.PIN_CAL);
 
-    if (lastState == HIGH && state == LOW) {
+    if (lastState == HIGH && state == LOW)
+    {
         diodeSubMode = (DiodeSubMode)((diodeSubMode + 1) % 5);
         diodeMenu();
         delay(250);

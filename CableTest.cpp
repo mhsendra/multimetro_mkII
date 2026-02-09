@@ -36,8 +36,8 @@ void showCable()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     float R = measureCable();
@@ -54,53 +54,53 @@ void showCable()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print("CABLE (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "CABLE (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (isnan(held))
         {
-            lcd_ui_print("ERROR");
+            lcd_driver_print(&lcd, "ERROR");
             return;
         }
 
         if (held <= CABLE_MAX_R)
         {
-            lcd_ui_print("OK  (");
-            lcd_ui_printFloat(held, 2);
-            lcd_ui_print(" Ohm)");
+            lcd_driver_print(&lcd, "OK  (");
+            lcd_driver_printFloat(&lcd, held, 2);
+            lcd_driver_print(&lcd, " Ohm)");
         }
         else
         {
-            lcd_ui_print("BREAK (");
-            lcd_ui_printFloat(held, 2);
-            lcd_ui_print(" Ohm)");
+            lcd_driver_print(&lcd, "BREAK (");
+            lcd_driver_printFloat(&lcd, held, 2);
+            lcd_driver_print(&lcd, " Ohm)");
         }
         return;
     }
 
     // --- Lectura normal ---
-    lcd_ui_clear();
-    lcd_ui_print("CABLE");
-    lcd_ui_setCursor(0, 1);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "CABLE");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
     if (isnan(R))
     {
-        lcd_ui_print("ERROR");
+        lcd_driver_print(&lcd, "ERROR");
         return;
     }
 
     if (R <= CABLE_MAX_R)
     {
-        lcd_ui_print("OK  (");
-        lcd_ui_printFloat(R, 2);
-        lcd_ui_print(" Ohm)");
+        lcd_driver_print(&lcd, "OK  (");
+        lcd_driver_printFloat(&lcd, R, 2);
+        lcd_driver_print(&lcd, " Ohm)");
     }
     else
     {
-        lcd_ui_print("BREAK (");
-        lcd_ui_printFloat(R, 2);
-        lcd_ui_print(" Ohm)");
+        lcd_driver_print(&lcd, "BREAK (");
+        lcd_driver_printFloat(&lcd, R, 2);
+        lcd_driver_print(&lcd, " Ohm)");
     }
 }
 

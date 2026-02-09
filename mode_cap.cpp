@@ -133,8 +133,8 @@ void showCapacitance()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     float C = measureCapacitance();
@@ -149,52 +149,52 @@ void showCapacitance()
     if (autoHold_update(C))
     {
         float held = autoHold_getHeldValue();
-        lcd_ui_clear();
-        lcd_ui_print("CAP (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "CAP (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (held == -1)
         {
-            lcd_ui_print("RESIDUAL");
+            lcd_driver_print(&lcd, "RESIDUAL");
             return;
         }
         if (held == -2)
         {
-            lcd_ui_print("TIMEOUT");
+            lcd_driver_print(&lcd, "TIMEOUT");
             return;
         }
 
         if (capSubMode == CAP_RANGE_NF)
-            lcd_ui_printFloat(held * 1e9, 1), lcd_ui_print(" nF");
+            lcd_driver_printFloat(&lcd, held * 1e9, 1), lcd_driver_print(&lcd, " nF");
         else if (capSubMode == CAP_RANGE_UF)
-            lcd_ui_printFloat(held * 1e6, 1), lcd_ui_print(" uF");
+            lcd_driver_printFloat(&lcd, held * 1e6, 1), lcd_driver_print(&lcd, " uF");
         else
-            lcd_ui_printFloat(held * 1e3, 2), lcd_ui_print(" mF");
+            lcd_driver_printFloat(&lcd, held * 1e3, 2), lcd_driver_print(&lcd, " mF");
 
         return;
     }
 
     // --- LECTURA NORMAL ---
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (C == -1)
     {
-        lcd_ui_print("RESIDUAL VOLT");
+        lcd_driver_print(&lcd, "RESIDUAL VOLT");
         return;
     }
 
     if (C == -2)
     {
-        lcd_ui_print("TIMEOUT");
+        lcd_driver_print(&lcd, "TIMEOUT");
         return;
     }
 
     if (capSubMode == CAP_RANGE_NF)
-        lcd_ui_printFloat(C * 1e9, 1), lcd_ui_print(" nF");
+        lcd_driver_printFloat(&lcd, C * 1e9, 1), lcd_driver_print(&lcd, " nF");
     else if (capSubMode == CAP_RANGE_UF)
-        lcd_ui_printFloat(C * 1e6, 1), lcd_ui_print(" uF");
+        lcd_driver_printFloat(&lcd, C * 1e6, 1), lcd_driver_print(&lcd, " uF");
     else
-        lcd_ui_printFloat(C * 1e3, 2), lcd_ui_print(" mF");
+        lcd_driver_printFloat(&lcd, C * 1e3, 2), lcd_driver_print(&lcd, " mF");
 }
 
 // =====================================================
@@ -206,8 +206,8 @@ void showESR()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     adc_manager_set_sps(ADC_SPS_860);
@@ -224,37 +224,37 @@ void showESR()
     if (autoHold_update(esr))
     {
         float held = autoHold_getHeldValue();
-        lcd_ui_clear();
-        lcd_ui_print("ESR (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "ESR (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (held == INFINITY)
         {
-            lcd_ui_print("OPEN");
+            lcd_driver_print(&lcd, "OPEN");
             return;
         }
         if (isnan(held) || held < 0)
         {
-            lcd_ui_print("ERROR");
+            lcd_driver_print(&lcd, "ERROR");
             return;
         }
 
-        lcd_ui_printFloat(held, 2);
-        lcd_ui_print(" Ohm");
+        lcd_driver_printFloat(&lcd, held, 2);
+        lcd_driver_print(&lcd, " Ohm");
         return;
     }
 
     // --- LECTURA NORMAL ---
-    lcd_ui_clear();
-    lcd_ui_print("ESR:");
-    lcd_ui_setCursor(0, 1);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "ESR:");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
     if (esr == INFINITY)
-        lcd_ui_print("OPEN");
+        lcd_driver_print(&lcd, "OPEN");
     else if (isnan(esr) || esr < 0)
-        lcd_ui_print("ERROR");
+        lcd_driver_print(&lcd, "ERROR");
     else
-        lcd_ui_printFloat(esr, 2), lcd_ui_print(" Ohm");
+        lcd_driver_printFloat(&lcd, esr, 2), lcd_driver_print(&lcd, " Ohm");
 }
 
 // =====================================================

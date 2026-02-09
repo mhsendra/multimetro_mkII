@@ -71,8 +71,8 @@ void showMosfet()
     autoHold_reset();
     autoOff_reset();
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(200);
 
     float vth = measureMosfet();
@@ -89,36 +89,36 @@ void showMosfet()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print("MOSFET (HOLD)");
-        lcd_ui_setCursor(0, 1);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "MOSFET (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
 
         if (isnan(held))
         {
-            lcd_ui_print("OL");
+            lcd_driver_print(&lcd, "OL");
             return;
         }
 
-        lcd_ui_print("Vth:");
-        lcd_ui_printFloat(held, 2);
-        lcd_ui_print("V");
+        lcd_driver_print(&lcd, "Vth:");
+        lcd_driver_printFloat(&lcd, held, 2);
+        lcd_driver_print(&lcd, "V");
         return;
     }
 
     // --- Lectura normal ---
-    lcd_ui_clear();
-    lcd_ui_print("MOSFET");
-    lcd_ui_setCursor(0, 1);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "MOSFET");
+    lcd_ui_setCursor(&lcd, 0, 1);
 
     if (isnan(vth))
     {
-        lcd_ui_print("OL");
+        lcd_driver_print(&lcd, "OL");
         return;
     }
 
-    lcd_ui_print("Vth:");
-    lcd_ui_printFloat(vth, 2);
-    lcd_ui_print("V");
+    lcd_driver_print(&lcd, "Vth:");
+    lcd_driver_printFloat(&lcd, vth, 2);
+    lcd_driver_print(&lcd, "V");
 }
 
 /* =====================================================

@@ -102,8 +102,8 @@ static float ohm_check_voltage(void)
 
 static void showOHM_Protect(void)
 {
-    lcd_ui_clear();
-    lcd_ui_print("OHM PROTECT");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "OHM PROTECT");
 }
 
 // =====================================================
@@ -157,18 +157,18 @@ static void showContinuity(float R, adc_range_id_t range)
     if (R > OHM_CONT_THRESHOLD + 2.0f)
         beepState = false;
 
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
     if (beepState)
     {
-        lcd_ui_print("BEEP ");
+        lcd_driver_print(&lcd, "BEEP ");
         tone(pin.PIN_BUZZER, 4000);
     }
     else
     {
-        lcd_ui_print("---- ");
+        lcd_driver_print(&lcd, "---- ");
         noTone(pin.PIN_BUZZER);
     }
-    lcd_ui_print(getOhmRangeSymbol(range));
+    lcd_driver_print(&lcd, getOhmRangeSymbol(range));
 }
 
 static void showOhmRelative(float R, adc_range_id_t range)
@@ -180,39 +180,39 @@ static void showOhmRelative(float R, adc_range_id_t range)
     if (autoHold_update(diff))
         diff = autoHold_getHeldValue();
 
-    lcd_ui_clear();
-    lcd_ui_print("REL ");
-    lcd_ui_printFloat(diff, 1);
-    lcd_ui_print(" ");
-    lcd_ui_print(getOhmRangeSymbol(range));
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "REL ");
+    lcd_driver_printFloat(&lcd, diff, 1);
+    lcd_driver_print(&lcd, " ");
+    lcd_driver_print(&lcd, getOhmRangeSymbol(range));
 }
 
 static void showOhmMinMax(adc_range_id_t range)
 {
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
     ohmMinMax_show();
-    lcd_ui_print(" ");
-    lcd_ui_print(getOhmRangeSymbol(range));
+    lcd_driver_print(&lcd, " ");
+    lcd_driver_print(&lcd, getOhmRangeSymbol(range));
 }
 
 static void showCableTest(float R, adc_range_id_t range)
 {
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
     if (R < 2.0f)
-        lcd_ui_print("CABLE OK ");
+        lcd_driver_print(&lcd, "CABLE OK ");
     else
-        lcd_ui_print("NO CABLE ");
-    lcd_ui_print(getOhmRangeSymbol(range));
+        lcd_driver_print(&lcd, "NO CABLE ");
+    lcd_driver_print(&lcd, getOhmRangeSymbol(range));
 }
 
 static void showOhmMain(float R, adc_range_id_t range)
 {
     if (autoHold_update(R))
         R = autoHold_getHeldValue();
-    lcd_ui_clear();
-    lcd_ui_printFloat(R, 1);
-    lcd_ui_print(" Ohm ");
-    lcd_ui_print(getOhmRangeSymbol(range));
+    lcd_ui_clear(&lcd);
+    lcd_driver_printFloat(&lcd, R, 1);
+    lcd_driver_print(&lcd, " Ohm ");
+    lcd_driver_print(&lcd, getOhmRangeSymbol(range));
 }
 
 // =====================================================

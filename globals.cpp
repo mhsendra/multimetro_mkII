@@ -7,8 +7,8 @@ Pins pin;
 PCF8574 pcf(PCF8574_ADDR);
 uint8_t pcf_state = 0xFF; // típico: todo en HIGH al arrancar
 
-// === LCD ===
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+// Definición del LCD global
+LCD_Handle lcd;
 // === Filtros ===
 Butterworth2 bw_vdc;
 

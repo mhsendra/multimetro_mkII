@@ -106,50 +106,50 @@ void showVAC(void)
     if (autoHold_update(v))
         v = autoHold_getHeldValue();
 
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(v))
     {
-        lcd_ui_print("VAC: OVL");
+        lcd_driver_print(&lcd, "VAC: OVL");
         return;
     }
 
     if (use_millivolts_vac(v))
     {
-        lcd_ui_print("VAC: ");
-        lcd_ui_printFloat(v * 1000.0f, 1);
-        lcd_ui_print(" mV");
+        lcd_driver_print(&lcd, "VAC: ");
+        lcd_driver_printFloat(&lcd, v * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mV");
     }
     else
     {
-        lcd_ui_print("VAC: ");
-        lcd_ui_printFloat(v, 3);
-        lcd_ui_print(" V");
+        lcd_driver_print(&lcd, "VAC: ");
+        lcd_driver_printFloat(&lcd, v, 3);
+        lcd_driver_print(&lcd, " V");
     }
 }
 
 void showVAC_Relative(void)
 {
     float v = measureVAC_Relative();
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(v))
     {
-        lcd_ui_print("REL AC: OVL");
+        lcd_driver_print(&lcd, "REL AC: OVL");
         return;
     }
 
     if (use_millivolts_vac(fabs(v)))
     {
-        lcd_ui_print("REL AC: ");
-        lcd_ui_printFloat(v * 1000.0f, 1);
-        lcd_ui_print(" mV");
+        lcd_driver_print(&lcd, "REL AC: ");
+        lcd_driver_printFloat(&lcd, v * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mV");
     }
     else
     {
-        lcd_ui_print("REL AC: ");
-        lcd_ui_printFloat(v, 3);
-        lcd_ui_print(" V");
+        lcd_driver_print(&lcd, "REL AC: ");
+        lcd_driver_printFloat(&lcd, v, 3);
+        lcd_driver_print(&lcd, " V");
     }
 }
 

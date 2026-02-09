@@ -100,8 +100,8 @@ void showTransistor()
     uint8_t basePin = 0;
     bool isNPN = true;
 
-    lcd_ui_clear();
-    lcd_ui_print("Detectando...");
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, "Detectando...");
     delay(300);
 
     if (!findBase(&basePin, isNPN))
@@ -109,8 +109,8 @@ void showTransistor()
         backlight_activity();
         autoOff_activity();
 
-        lcd_ui_clear();
-        lcd_ui_print("No detectado");
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "No detectado");
         return;
     }
 
@@ -125,18 +125,18 @@ void showTransistor()
     {
         float held = autoHold_getHeldValue();
 
-        lcd_ui_clear();
-        lcd_ui_print(isNPN ? "NPN (HOLD)" : "PNP (HOLD)");
-        lcd_ui_setCursor(0, 1);
-        lcd_ui_print("hFE:");
-        lcd_ui_printFloat(held, 0);
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, isNPN ? "NPN (HOLD)" : "PNP (HOLD)");
+        lcd_ui_setCursor(&lcd, 0, 1);
+        lcd_driver_print(&lcd, "hFE:");
+        lcd_driver_printFloat(&lcd, held, 0);
         return;
     }
 
     // --- Lectura normal ---
-    lcd_ui_clear();
-    lcd_ui_print(isNPN ? "NPN" : "PNP");
-    lcd_ui_setCursor(0, 1);
-    lcd_ui_print("hFE:");
-    lcd_ui_printFloat(hfe, 0);
+    lcd_ui_clear(&lcd);
+    lcd_driver_print(&lcd, isNPN ? "NPN" : "PNP");
+    lcd_ui_setCursor(&lcd, 0, 1);
+    lcd_driver_print(&lcd, "hFE:");
+    lcd_driver_printFloat(&lcd, hfe, 0);
 }

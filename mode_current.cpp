@@ -108,11 +108,11 @@ void showCURRENT(void)
     if (autoHold_update(i))
         i = autoHold_getHeldValue();
 
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(i))
     {
-        lcd_ui_print("I: OVL");
+        lcd_driver_print(&lcd, "I: OVL");
         return;
     }
 
@@ -121,15 +121,15 @@ void showCURRENT(void)
 
     if (currentRange == CURR_RANGE_mA)
     {
-        lcd_ui_print("I: ");
-        lcd_ui_printFloat(If * 1000.0f, 1);
-        lcd_ui_print(" mA");
+        lcd_driver_print(&lcd, "I: ");
+        lcd_driver_printFloat(&lcd, If * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mA");
     }
     else
     {
-        lcd_ui_print("I: ");
-        lcd_ui_printFloat(If, 3);
-        lcd_ui_print(" A");
+        lcd_driver_print(&lcd, "I: ");
+        lcd_driver_printFloat(&lcd, If, 3);
+        lcd_driver_print(&lcd, " A");
     }
 }
 

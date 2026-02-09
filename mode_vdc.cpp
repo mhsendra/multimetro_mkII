@@ -136,75 +136,75 @@ void showVDC(void)
     if (autoHold_update(v))
         v = autoHold_getHeldValue();
 
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(v))
     {
-        lcd_ui_print("VDC: OVL");
+        lcd_driver_print(&lcd, "VDC: OVL");
         return;
     }
 
-    lcd_ui_print("VDC: ");
+    lcd_driver_print(&lcd, "VDC: ");
     if (use_millivolts(v))
     {
-        lcd_ui_printFloat(v * 1000.0f, 1);
-        lcd_ui_print(" mV");
+        lcd_driver_printFloat(&lcd, v * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mV");
     }
     else
     {
-        lcd_ui_printFloat(v, 3);
-        lcd_ui_print(" V");
+        lcd_driver_printFloat(&lcd, v, 3);
+        lcd_driver_print(&lcd, " V");
     }
 }
 
 void showVDC_Relative(void)
 {
     float v = measureVDC_Relative();
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(v))
     {
-        lcd_ui_print("REL: OVL");
+        lcd_driver_print(&lcd, "REL: OVL");
         return;
     }
 
-    lcd_ui_print("REL: ");
+    lcd_driver_print(&lcd, "REL: ");
     if (use_millivolts(fabs(v)))
     {
-        lcd_ui_printFloat(v * 1000.0f, 1);
-        lcd_ui_print(" mV");
+        lcd_driver_printFloat(&lcd, v * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mV");
     }
     else
     {
-        lcd_ui_printFloat(v, 3);
-        lcd_ui_print(" V");
+        lcd_driver_printFloat(&lcd, v, 3);
+        lcd_driver_print(&lcd, " V");
     }
 }
 
 void showPower(void)
 {
     float p = measurePower();
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
     if (isinf(p))
     {
-        lcd_ui_print("P: OVL");
+        lcd_driver_print(&lcd, "P: OVL");
         return;
     }
 
-    lcd_ui_print("P: ");
-    lcd_ui_printFloat(p, 2);
-    lcd_ui_print(" W");
+    lcd_driver_print(&lcd, "P: ");
+    lcd_driver_printFloat(&lcd, p, 2);
+    lcd_driver_print(&lcd, " W");
 }
 
 void showEnergy(void)
 {
     float e = measureEnergy();
-    lcd_ui_clear();
+    lcd_ui_clear(&lcd);
 
-    lcd_ui_print("E: ");
-    lcd_ui_printFloat(e, 3);
-    lcd_ui_print(" Wh");
+    lcd_driver_print(&lcd, "E: ");
+    lcd_driver_printFloat(&lcd, e, 3);
+    lcd_driver_print(&lcd, " Wh");
 }
 
 // =====================================================
@@ -237,10 +237,10 @@ void measureVDC_MODE(void)
         break;
     case VDC_CURRENT_EST:
     {
-        lcd_ui_clear();
-        lcd_ui_print("I est: ");
-        lcd_ui_printFloat(measureCURRENT_calibrated() * 1000.0f, 1);
-        lcd_ui_print(" mA");
+        lcd_ui_clear(&lcd);
+        lcd_driver_print(&lcd, "I est: ");
+        lcd_driver_printFloat(&lcd, measureCURRENT_calibrated() * 1000.0f, 1);
+        lcd_driver_print(&lcd, " mA");
     }
     break;
     }
