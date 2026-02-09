@@ -2,22 +2,16 @@
 #define MENUS_H
 
 #include <Arduino.h>
+#include "lcd_ui.h"
 #include "globals.h"
+#include "config.h" // <- ya tiene SubModeEntry, ModeTable, Mode
 
-int readSelector();
+// -------------------- VARIABLES EXTERNAS --------------------
+extern Mode modes[];
+extern int numModes;
 
-// Menús de submodos
-void freqMenu();
-void vdcMenu();
-void vacMenu();
-void ohmMenu();
-void diodeMenu();
-
-// Actualización de submodos
-void updateFreqSubMode();
-void updateVdcSubMode();
-void updateVacSubMode();
-void updateOhmSubMode();
-void updateDiodeSubMode();
+// -------------------- FUNCIONES --------------------
+void showMenu(int modeIndex); // Muestra menú de un modo según submodo actual
+int readSelector();           // Lee selector físico (3 bits)
 
 #endif

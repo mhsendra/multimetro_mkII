@@ -180,4 +180,31 @@ struct Calibration
     float induct_factor;
 };
 
+// -------------------- SUBMODOS GENÉRICOS --------------------
+typedef struct
+{
+    int id;                  // Enum del submodo
+    const char *displayName; // Texto que aparece en el LCD
+} SubModeEntry;
+
+// -------------------- TABLA DE SUBMODOS --------------------
+typedef struct
+{
+    const char *title;            // Nombre del menú
+    const SubModeEntry *subModes; // Puntero a tabla de submodos
+    int numSubModes;              // Número de submodos
+} ModeTable;
+
+// -------------------- MODO PRINCIPAL --------------------
+typedef struct
+{
+    const char *name;       // Nombre lógico del modo (ej: "VDC")
+    const ModeTable *table; // Tabla de submodos
+    int currentSubModeId;   // Submodo activo
+} Mode;
+
+// -------------------- VARIABLES EXTERNAS --------------------
+extern Mode modes[];
+extern int numModes;
+
 #endif
