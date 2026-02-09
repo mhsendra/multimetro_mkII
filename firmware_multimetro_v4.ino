@@ -19,9 +19,34 @@
 #include "AutoOff.h"
 #include "backlight.h"
 #include "mode_dispatchers.h"
+#include "selector.h"
+#include "io_expander_pcf8574.h"
+// #include "io_expander_mcp23017.h"
 
 void setup()
 {
+    // =====================================================
+    // SELECCIÓN DE EXPANSOR (elige UNO)
+    // =====================================================
+
+    // ---- PCF8574 ----
+    PCF8574Expander pcf8574(0x20);
+    IOExpander *ioExpander = &pcf8574;
+
+    // ---- MCP23017 ----
+    // MCP23017Expander mcp23017(0x20);
+    // IOExpander* ioExpander = &mcp23017;
+
+    // ---- SIN EXPANSOR ----
+    // IOExpander* ioExpander = nullptr;
+
+    // Configurar pines del selector como entrada en el expansor
+    ioExpander->pinMode(pin.SEL0, INPUT);
+    ioExpander->pinMode(pin.SEL1, INPUT);
+    ioExpander->pinMode(pin.SEL2, INPUT);
+
+    // Inicializar LCD
+    lcd_driver_init(&lcd, LCD_ADDR, LCD_COLS, LCD_ROWS);
     pinMode(pin.PIN_ONOFF, OUTPUT);
     digitalWrite(pin.PIN_ONOFF, HIGH); // mantener encendido
 

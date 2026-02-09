@@ -12,6 +12,6 @@ extern int numModes;
 
 // -------------------- FUNCIONES --------------------
 void showMenu(int modeIndex); // Muestra menú de un modo según submodo actual
-int readSelector();           // Lee selector físico (3 bits)
+// int readSelector();           // Lee selector físico (3 bits)
 
 #endif

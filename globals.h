@@ -42,6 +42,13 @@ extern VacSubMode vacSubMode;
 extern OhmRange currentOhmRange;
 extern CurrentRange currentRange;
 
+#include "io_expander.h"
+
+class IOExpander;
+
+// Instancia global del expansor I2C
+extern IOExpander *ioExpander;
+
 // === Rango VDC ===
 extern float vdc_ranges[3];
 extern int vdc_range;
