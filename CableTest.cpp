@@ -32,7 +32,6 @@ void showCable()
     // Reset de sistemas auxiliares
     backlight_activity();
     autoHold_reset();
-    autoOff_reset();
 
     lcd_ui_clear(&lcd);
     lcd_printAt(&lcd, 0, 0, "Detectando...");
@@ -44,7 +43,6 @@ void showCable()
     if (!isnan(R))
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     // =================================================

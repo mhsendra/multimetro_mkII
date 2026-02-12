@@ -4,10 +4,6 @@
 #include "lcd_ui.h"
 #include "auto_hold.h"
 #include "backlight.h"
-<<<<<<< HEAD
-=======
-#include "autoOff.h"
->>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include "globals.h"
 #include "range_control.h"
 #include "config.h"
@@ -72,7 +68,6 @@ void showMosfet()
     // Reset de sistemas auxiliares
     backlight_activity();
     autoHold_reset();
-    autoOff_reset();
 
     lcd_ui_clear(&lcd);
     lcd_driver_print(&lcd, "Detectando...");
@@ -84,7 +79,6 @@ void showMosfet()
     if (!isnan(vth))
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     // --- AUTO HOLD ---

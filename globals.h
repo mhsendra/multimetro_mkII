@@ -61,9 +61,8 @@ extern Calibration cal;
 extern bool cableOK;
 extern unsigned long lastBreak;
 
-// === Auto-off y backlight ===
+// === Backlight ===
 extern unsigned long lastActivityTime;
-extern bool autoOffActive;
 extern unsigned long lastBacklightActivity;
 extern bool backlightOff;
 

@@ -35,9 +35,8 @@ Calibration cal;
 bool cableOK = false;
 unsigned long lastBreak = 0;
 
-// === Auto-off y backlight ===
+// === Backlight ===
 unsigned long lastActivityTime = 0;
-bool autoOffActive = true;
 unsigned long lastBacklightActivity = 0;
 bool backlightOff = false;
 

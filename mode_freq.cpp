@@ -5,10 +5,6 @@
 #include "config.h"
 #include "auto_Hold.h"
 #include "backlight.h"
-<<<<<<< HEAD
-=======
-#include "AutoOff.h"
->>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include <math.h>
 #include "range_control.h"
 
@@ -164,7 +160,6 @@ void showFrequency()
     if (f > 0.0f)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     if (autoHold_update(f))
@@ -183,7 +178,6 @@ void showDutyCycle()
     if (d > 0.0f)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     lcd_ui_clear(&lcd);
@@ -199,7 +193,6 @@ void showPulseWidth()
     if (pw > 0.0f)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     lcd_ui_clear(&lcd);
@@ -215,7 +208,6 @@ void showPeriod()
     if (p > 0.0f)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     lcd_ui_clear(&lcd);
@@ -230,7 +222,6 @@ void showPeriod()
 void measureFREQ()
 {
     backlight_activity();
-    autoOff_activity();
 
     adc_manager_set_sps(ADC_SPS_860); // Máxima velocidad
 

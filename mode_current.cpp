@@ -4,10 +4,6 @@
 #include "globals.h"
 #include "auto_Hold.h"
 #include "backlight.h"
-<<<<<<< HEAD
-=======
-#include "AutoOff.h"
->>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include "range_control.h"
 #include <math.h>
 
@@ -86,7 +82,7 @@ float measureCURRENT_calibrated(void)
 }
 
 // =====================================================
-// PANTALLA (con filtro EMA, backlight, autoOff, autoHold)
+// PANTALLA (con filtro EMA, backlight, autoHold)
 // =====================================================
 void showCURRENT(void)
 {
@@ -98,7 +94,6 @@ void showCURRENT(void)
     if (!isinf(i) && !isnan(i))
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     if (autoHold_update(i))

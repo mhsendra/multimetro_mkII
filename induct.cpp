@@ -9,10 +9,6 @@
 #include "adcmanager.h"
 #include "auto_hold.h"
 #include "backlight.h"
-<<<<<<< HEAD
-=======
-#include "autoOff.h"
->>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include "range_control.h"
 
 // =====================================================
@@ -79,7 +75,6 @@ void showInductance()
 {
     backlight_activity();
     autoHold_reset();
-    autoOff_reset();
 
     lcd_ui_clear(&lcd);
     lcd_driver_print(&lcd, "Detectando...");
@@ -90,7 +85,6 @@ void showInductance()
     if (!isnan(L) && L > 0)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     // --- AUTO HOLD ---

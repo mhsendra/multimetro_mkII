@@ -8,10 +8,6 @@
 #include "cap_utils.h"
 #include "auto_hold.h"
 #include "backlight.h"
-<<<<<<< HEAD
-=======
-#include "autoOff.h"
->>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include "mode_current.h"
 #include "range_control.h"
 
@@ -39,7 +35,6 @@ static bool capResidualVoltageTooHigh()
 float measureCapacitance()
 {
     backlight_activity();
-    autoOff_activity();
 
     // 1. Protección por voltaje residual
     if (capResidualVoltageTooHigh())
@@ -96,7 +91,6 @@ float measureCapacitance()
     if (C > 0 && !isnan(C) && !isinf(C))
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     return C;
@@ -134,7 +128,6 @@ void showCapacitance()
 {
     backlight_activity();
     autoHold_reset();
-    autoOff_reset();
 
     lcd_ui_clear(&lcd);
     lcd_driver_print(&lcd, "Detectando...");
@@ -145,7 +138,6 @@ void showCapacitance()
     if (!isnan(C) && !isinf(C) && C > 0)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     // --- AUTO HOLD ---
@@ -207,7 +199,6 @@ void showESR()
 {
     backlight_activity();
     autoHold_reset();
-    autoOff_reset();
 
     lcd_ui_clear(&lcd);
     lcd_driver_print(&lcd, "Detectando...");
@@ -220,7 +211,6 @@ void showESR()
     if (!isnan(esr) && esr != INFINITY)
     {
         backlight_activity();
-        autoOff_activity();
     }
 
     // --- AUTO HOLD ---
