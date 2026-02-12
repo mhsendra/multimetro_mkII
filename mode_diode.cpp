@@ -7,6 +7,10 @@
 #include "filters.h"
 #include "auto_hold.h"
 #include "backlight.h"
+<<<<<<< HEAD
+=======
+#include "autoOff.h"
+>>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include "config.h"
 #include "range_control.h"
 

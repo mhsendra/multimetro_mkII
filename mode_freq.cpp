@@ -5,6 +5,10 @@
 #include "config.h"
 #include "auto_Hold.h"
 #include "backlight.h"
+<<<<<<< HEAD
+=======
+#include "AutoOff.h"
+>>>>>>> 93f51e4ce41f32c650d2cb62257bad4757cf4f1a
 #include <math.h>
 #include "range_control.h"
 
