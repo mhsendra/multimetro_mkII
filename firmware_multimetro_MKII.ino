@@ -24,20 +24,9 @@
 
 void setup()
 {
-    // =====================================================
-    // SELECCIÓN DE EXPANSOR (elige UNO)
-    // =====================================================
-
     // ---- PCF8574 ----
     PCF8574Expander pcf8574(0x20);
     IOExpander *ioExpander = &pcf8574;
-
-    // ---- MCP23017 ----
-    // MCP23017Expander mcp23017(0x20);
-    // IOExpander* ioExpander = &mcp23017;
-
-    // ---- SIN EXPANSOR ----
-    // IOExpander* ioExpander = nullptr;
 
     // Configurar pines del selector como entrada en el expansor
     ioExpander->pinMode(pin.SEL0, INPUT);
@@ -63,7 +52,6 @@ void setup()
     pinMode(pin.SEL2, INPUT_PULLUP);
 
     // Inicialización de módulos
-    autoOff_reset();
     loadCalibration();
     initFilters();
     adc_manager_init();
@@ -80,7 +68,6 @@ void loop()
 
     // 2️⃣ Actualizaciones de sistemas auxiliares
     backlight_update();
-    autoOff_update();
 
     // 3️⃣ Leer selector físico y actualizar selectedMode
     int sel = readSelector();
