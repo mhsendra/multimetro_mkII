@@ -8,6 +8,7 @@
 #include "filters.h"
 #include "lcd_driver.h"
 #include <PCF8574.h>
+#include "io_expander_pcf8574.h"
 
 #define PCF8574_ADDR 0x20 // o 0x38 segun modelo
 #define LCD_ADDR 0x27
@@ -18,8 +19,7 @@
 extern Pins pin; // Struct de pines
 
 // === PCF8574 ===
-extern PCF8574 pcf;
-extern uint8_t pcf_state;
+extern PCF8574Expander pcf8574;
 
 extern float ohmMax;
 extern float ohmMin;
@@ -29,6 +29,18 @@ extern LCD_Handle lcd;
 
 // === Filtros ===
 extern Butterworth2 bw_vdc;
+extern Butterworth2 bw_vac;
+extern Butterworth2 bw_current;
+
+// Filtros IIR para cada canal
+extern float filter_vdc;     // filtro IIR para VDC
+extern float filter_current; // filtro IIR para corriente
+extern float filter_vac;     // filtro IIR para VAC, RMS deslizante
+extern float filter_ohm;
+extern float filter_continuity;
+extern const float filter_alpha; // suavizado IIR (0 < alpha < 1)
+
+// Inicialización de filtros
 void initFilters();
 
 // === Modos y submodos ===
@@ -54,6 +66,10 @@ extern float vdc_ranges[3];
 extern int vdc_range;
 extern float acsOffset;
 
+// VAC RMS deslizante
+extern float vac_rms_accum;
+extern const float vac_rms_alpha; // suavidad del filtro IIR
+
 // === Calibración ===
 extern Calibration cal;
 
@@ -77,8 +93,5 @@ extern Adafruit_ADS1115 ads;
 extern uint16_t ads_mux;
 extern uint16_t ads_gain;
 extern uint16_t ads_sps;
-
-// Estado actual del PCF8574 (para restaurar si hace falta)
-extern uint8_t matrix_pcf_state;
 
 #endif

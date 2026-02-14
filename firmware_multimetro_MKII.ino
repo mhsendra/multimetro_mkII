@@ -22,11 +22,15 @@
 #include "io_expander_pcf8574.h"
 // #include "io_expander_mcp23017.h"
 
+// Temporizador global
+unsigned long lastUpdate = 0;
+const unsigned long updateInterval = 20; // 20 ms → 50 Hz
+
 void setup()
 {
     // ---- PCF8574 ----
-    PCF8574Expander pcf8574(0x20);
-    IOExpander *ioExpander = &pcf8574;
+    // PCF8574Expander pcf8574(0x20);
+    // IOExpander *ioExpander = &pcf8574;
 
     // Configurar pines del selector como entrada en el expansor
     ioExpander->pinMode(pin.SEL0, INPUT);
@@ -37,7 +41,6 @@ void setup()
     lcd_driver_init(&lcd, LCD_ADDR, LCD_COLS, LCD_ROWS);
     pinMode(pin.BOOST_HV_CTRL, OUTPUT);
     digitalWrite(pin.BOOST_HV_CTRL, HIGH); // modo seguro → 5V
-
 
     backlight_reset();
 
@@ -64,56 +67,51 @@ void setup()
 
 void loop()
 {
-    // 1️⃣ Ejecutar el modo seleccionado
-    dispatchMode(selectedMode);
-
-    // 2️⃣ Actualizaciones de sistemas auxiliares
-    backlight_update();
-
-    // 3️⃣ Leer selector físico y actualizar selectedMode
-    int sel = readSelector();
-
-    switch (sel)
+    unsigned long now = millis();
+    if (now - lastUpdate >= updateInterval)
     {
-    case 0:
-        selectedMode = MODE_VDC;
-        break;
+        lastUpdate = now;
 
-    case 1:
-        selectedMode = MODE_VAC;
-        break;
+        // 1️⃣ Leer selector físico y actualizar selectedMode inmediatamente
+        int sel = readSelector(ioExpander);
+        switch (sel)
+        {
+        case 0:
+            selectedMode = MODE_VDC;
+            break;
+        case 1:
+            selectedMode = MODE_VAC;
+            break;
+        case 2:
+            selectedMode = MODE_OHM;
+            break;
+        case 3:
+            selectedMode = MODE_PN;
+            break;
+        case 4:
+            selectedMode = MODE_CURRENT;
+            currentRange = CURR_RANGE_mA;
+            break;
+        case 5:
+            selectedMode = MODE_CURRENT;
+            currentRange = CURR_RANGE_5A;
+            break;
+        case 6:
+            selectedMode = MODE_CAP;
+            break;
+        case 7:
+            selectedMode = MODE_INDUCT;
+            break;
+        default:
+            selectedMode = MODE_VDC;
+            break;
+        }
 
-    case 2:
-        selectedMode = MODE_OHM;
-        break;
+        // 2️⃣ Ejecutar el modo actualizado
+        dispatchMode(selectedMode);
 
-    case 3:
-        selectedMode = MODE_PN; // Diodo / Transistor / Zener / MOSFET
-        break;
-
-    case 4:
-        selectedMode = MODE_CURRENT;
-        currentRange = CURR_RANGE_mA; // rango miliamperios
-        break;
-
-    case 5:
-        selectedMode = MODE_CURRENT;
-        currentRange = CURR_RANGE_5A; // rango amperios
-        break;
-
-    case 6:
-        selectedMode = MODE_CAP;
-        break;
-
-    case 7:
-        selectedMode = MODE_INDUCT;
-        break;
-
-    default:
-        selectedMode = MODE_VDC; // fallback seguro
-        break;
+        // 3️⃣ Actualización de sistemas auxiliares
+        backlight_update();
     }
-
-    // 4️⃣ Pequeña pausa para estabilidad
-    delay(100);
+    // 4️⃣ Aquí se pueden poner tareas muy rápidas no críticas
 }

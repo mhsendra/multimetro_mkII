@@ -4,13 +4,27 @@
 Pins pin;
 
 // === PCF8574 ===
-PCF8574 pcf(PCF8574_ADDR);
-uint8_t pcf_state = 0xFF; // típico: todo en HIGH al arrancar
+PCF8574Expander pcf8574(PCF8574_ADDR);
+IOExpander *ioExpander = &pcf8574; // **definición real**
 
 // Definición del LCD global
 LCD_Handle lcd;
-// === Filtros ===
+
+// Instancias de filtros
 Butterworth2 bw_vdc;
+Butterworth2 bw_vac;
+Butterworth2 bw_current;
+
+// Estados de EMA/IIR
+float filter_vdc = -1e9; // valor inicial muy bajo para detectar primera medición
+float filter_vac = -1e9;
+float filter_current = -1e9;
+float filter_ohm = -1e9;
+float filter_continuity = -1e9;
+const float filter_alpha = 0.05f;
+
+// Inicialización de filtros
+void initFilters();
 
 // === Modos y submodos ===
 MainMode selectedMode = MODE_VDC;
@@ -27,6 +41,10 @@ CurrentRange currentRange = CURR_RANGE_mA;
 float vdc_ranges[3] = {2.0f, 20.0f, 200.0f};
 int vdc_range = 0;
 float acsOffset = 0.0f;
+
+// Inicialización de VAC RMS
+float vac_rms_accum = 0.0f;
+const float vac_rms_alpha = 0.05f; // ajustar según suavidad deseada
 
 // === Calibración ===
 Calibration cal;
@@ -51,6 +69,3 @@ Adafruit_ADS1115 ads;
 uint16_t ads_mux = 0;
 uint16_t ads_gain = 0;
 uint16_t ads_sps = 0;
-
-// Estado actual del PCF8574 (para restaurar si hace falta)
-uint8_t matrix_pcf_state = 0;

@@ -16,8 +16,7 @@ void matrix_disconnect_all()
     digitalWrite(pin.SSR_SHUNT, LOW);
 
     // PCF shadow register
-    pcf_state &= ~PCF_ZENER_AQY;
-    pcf.write8(pcf_state);
+    ioExpander->digitalWrite(PCF_ZENER_AQY, HIGH);
 }
 
 // -------------------------------

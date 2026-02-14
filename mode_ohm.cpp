@@ -127,14 +127,23 @@ static float measureOHM_raw(void)
 }
 
 // =====================================================
-// OHM — CALIBRADO
+// OHM — CALIBRADO Y FILTRADO EMA
 // =====================================================
 static float measureOHM_calibrated(void)
 {
     float R = measureOHM_raw();
     if (isinf(R))
         return R;
-    return R * cal.ohm;
+
+    // Aplicar calibración
+    R *= cal.ohm;
+
+    // ------------------------------
+    // Aplicar EMA global para suavizar
+    // ------------------------------
+    filter_ohm = applyEMA(R, filter_ohm, filter_alpha);
+
+    return filter_ohm;
 }
 
 // =====================================================
@@ -208,7 +217,7 @@ static void showOhmMain(float R, adc_range_id_t range)
 }
 
 // =====================================================
-// MODO COMPLETO OHM
+// MODO COMPLETO OHM CON FILTROS (EMA)
 // =====================================================
 void measureOHM_MODE(void)
 {
@@ -226,10 +235,27 @@ void measureOHM_MODE(void)
     ohm_set_relays(range);
     adc_manager_select(range);
 
-    float R = measureOHM_calibrated();
+    float R = measureOHM_calibrated(); // Valor OHM calibrado
 
+    // =====================================================
+    // Aplicar EMA global a OHM y continuidad según submodo
+    // =====================================================
     if (!isinf(R) && !isnan(R))
     {
+        if (ohmSubMode == OHM_CONT)
+        {
+            // Continuidad: EMA específica
+            filter_continuity = applyEMA(R, filter_continuity, filter_alpha);
+            R = filter_continuity;
+        }
+        else
+        {
+            // OHM normal: EMA global
+            filter_ohm = applyEMA(R, filter_ohm, filter_alpha);
+            R = filter_ohm;
+        }
+
+        // Auto-rango
         adc_range_id_t newRange = ohm_autorange(R, range);
         if (newRange != range)
         {
@@ -237,9 +263,13 @@ void measureOHM_MODE(void)
             backlight_activity();
             return; // medir con nuevo rango en siguiente ciclo
         }
+
         backlight_activity();
     }
 
+    // =====================================================
+    // Mostrar según submodo
+    // =====================================================
     switch (ohmSubMode)
     {
     case OHM_MAIN:
