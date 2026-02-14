@@ -9,33 +9,68 @@
 #include "config.h"
 
 /* =====================================================
+ * CONFIGURACIÓN DEL DIVISOR PARA ZENER
+ * ===================================================== */
+// RUP = 100k, RDOWN = 22k  → factor ≈ 0.18
+static constexpr float ZENER_DIV_FACTOR = (22.0f / (100.0f + 22.0f));
+
+/* =====================================================
+ * CONTROL DEL BOOSTER
+ * ===================================================== */
+static inline void booster_set_5V()
+{
+    digitalWrite(pin.BOOST_HV_CTRL, HIGH); // MOSFET ON → 5V
+}
+
+static inline void booster_set_24V()
+{
+    digitalWrite(pin.BOOST_HV_CTRL, LOW); // MOSFET OFF → 24V
+}
+
+static inline void booster_init()
+{
+    pinMode(pin.BOOST_HV_CTRL, OUTPUT);
+    booster_set_5V(); // modo seguro al arrancar
+}
+
+/* =====================================================
  * MEDIR DIODO ZENER
  * ===================================================== */
 float measureZener()
 {
     rng_release_for_gpio(); // liberar RNG para este modo
 
-    // Preparar pines
+    booster_set_24V(); // activar modo alta tensión
+    delay(10);         // estabilizar el booster
+
+    // Preparar pines de test
     pinMode(pin.TP1, OUTPUT);
     digitalWrite(pin.TP1, HIGH); // corriente de prueba
     pinMode(pin.TP2, INPUT);
 
+    // Configurar ADC
     adc_manager_select(RANGE_DC_20V);
     adc_manager_set_sps(ADC_SPS_475);
 
-    delay(10); // estabilizar
+    delay(10); // estabilizar señal
 
-    float vz = adc_manager_read_voltage();
+    // Leer tensión en el divisor
+    float v_adc = adc_manager_read_voltage();
 
-    // Saturación por protección
-    if (vz > 4.95f)
-        vz = 4.95f;
+    // Protección por saturación del ADC
+    if (v_adc > 4.95f)
+        v_adc = 4.95f;
+
+    // Convertir a tensión real del zener
+    float vz = v_adc / ZENER_DIV_FACTOR;
 
     // Reset de pines
     pinMode(pin.TP1, INPUT);
     pinMode(pin.TP2, INPUT);
 
-    if (vz < 0.1f) // muy bajo, no detectado
+    booster_set_5V(); // volver a modo normal
+
+    if (vz < 0.5f) // muy bajo, probablemente no hay zener
         return NAN;
 
     return vz;
@@ -46,7 +81,8 @@ float measureZener()
  * ===================================================== */
 void mode_zener_run()
 {
-    // Reset de sistemas auxiliares
+    booster_init(); // asegurar estado inicial
+
     backlight_activity();
     autoHold_reset();
 
@@ -57,9 +93,7 @@ void mode_zener_run()
     float vz = measureZener();
 
     if (!isnan(vz))
-    {
         backlight_activity();
-    }
 
     // --- AUTO HOLD ---
     if (autoHold_update(vz))

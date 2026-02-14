@@ -35,8 +35,9 @@ void setup()
 
     // Inicializar LCD
     lcd_driver_init(&lcd, LCD_ADDR, LCD_COLS, LCD_ROWS);
-    pinMode(pin.PIN_ONOFF, OUTPUT);
-    digitalWrite(pin.PIN_ONOFF, HIGH); // mantener encendido
+    pinMode(pin.BOOST_HV_CTRL, OUTPUT);
+    digitalWrite(pin.BOOST_HV_CTRL, HIGH); // modo seguro → 5V
+
 
     backlight_reset();
 

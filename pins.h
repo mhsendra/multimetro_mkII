@@ -38,9 +38,9 @@ struct Pins
     // Frecuencia
     const uint8_t FREQ_IN = 13; // PB5
 
-    // Calibración y encendido (PB6 y PB7)
-    const uint8_t PIN_CAL = 20;   // PB6 / XTAL1
-    const uint8_t PIN_ONOFF = 21; // PB7 / XTAL2
+    // Calibración y booster para zener (PB6 y PB7)
+    const uint8_t PIN_CAL = 20;       // PB6 / XTAL1
+    const uint8_t BOOST_HV_CTRL = 21; // PB7 / XTAL2
 };
 
 #endif
